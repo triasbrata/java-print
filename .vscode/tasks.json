@@ -1,0 +1,27 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-class",
+      "type": "shell",
+      "command": [
+        "javac -cp lib/gson-2.6.2.jar:lib/pdfbox-app-2.0.16.jar  src/app/App.java -d out/  --release 8"
+      ],
+      "group": "build"
+    },
+    {
+      "label": "build-jar",
+      "dependsOn": [
+        "build-class"
+      ],
+      "type": "shell",
+      "command": [
+        "jar cvfm PrintDirect.jar manifest.MF -C out ."
+      ],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
