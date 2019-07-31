@@ -9,8 +9,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.printing.PDFPageable;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
@@ -29,6 +35,7 @@ import java.util.Map;
 public class App {
   protected PrintService[] printServices;
   protected Map<String, Integer> listArguments;
+  private float height;
 
   public App() {
     this.printServices = PrintServiceLookup.lookupPrintServices(null, null);
@@ -160,7 +167,32 @@ public class App {
       printerJob.setPrintService(printServiceUsage);
       printerJob.setCopies(copies);
       printerJob.setJobName(file.getName());
-      printerJob.setPageable(new PDFPageable(doc));
+      if(doc.getNumberOfPages() < 1){
+        App.exit("No page in " + file.getName(), this);
+      }
+      PageFormat pf = new PageFormat();
+      PDRectangle mediaBox = doc.getPage(0).getMediaBox();
+      Paper paper = pf.getPaper();
+      float width = mediaBox.getWidth();
+      height = mediaBox.getHeight();
+      paper.setSize(width, height);
+      paper.setImageableArea(0, 0, width, height);
+      pf.setPaper(paper);
+      printerJob.setPrintable(new Printable(){
+      
+        @Override
+        public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+          if(doc.getNumberOfPages()  <= pageIndex){
+            return Printable.NO_SUCH_PAGE;
+          }
+          Graphics2D graphics2 = (Graphics2D) graphics;
+          try {
+            new PDFRenderer(doc).renderPageToGraphics(pageIndex, graphics2);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          return Printable.PAGE_EXISTS;
+      }}, pf);
       if(!isPrintSilent){
         if(!printerJob.printDialog()){
           canclePrint = true;
