@@ -17,11 +17,26 @@
         "build-class"
       ],
       "type": "shell",
-      "command": [
-        "jar cvfm PrintDirect.jar manifest.MF -C out ."
+      "command":"jar",
+      "args": [
+        "-C out",
+        "--file ${input:outputDir}/PrintDirect.jar",
+        "--manifest manifest.MF", 
+
       ],
-      "group": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
       "problemMatcher": []
+    },
+  ],
+  "inputs": [
+    {
+      "id": "outputDir",
+      "description": "Out put directory",
+      "default": "/Users/triasbratayudhana/Developer/Node/wexond/static",
+      "type": "promptString"
     }
   ]
 }

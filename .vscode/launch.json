@@ -2,6 +2,22 @@
   "configurations": [
     {
       "type": "java",
+      "name": "CodeLens (Launch) - PrintPdf",
+      "request": "launch",
+      "mainClass": "app.PrintPdf",
+      "args": "${command:SpecifyProgramArgs}",
+      "projectName": "PrintDirect"
+    },
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - ImagePrint",
+      "request": "launch",
+      "mainClass": "app.ImagePrint",
+      "args": "${command:SpecifyProgramArgs}",
+      "projectName": "PrintDirect"
+    },
+    {
+      "type": "java",
       "name": "CodeLens (Launch) - App",
       "request": "launch",
       "mainClass": "app.App",
