@@ -24,5 +24,13 @@
       "args": "${command:SpecifyProgramArgs}",
       "projectName": "PrintDirect"
     }
+  ],
+  "inputs": [
+    {
+      "id": "args",
+      "description": "args",
+      "type": "promptString",
+      "default": ""
+    }
   ]
 }

@@ -2,19 +2,48 @@
   // See https://go.microsoft.com/fwlink/?LinkId=733558
   // for the documentation about the tasks.json format
   "version": "2.0.0",
+  "windows": {
+    "options": {
+      "env": {
+        "JAVA_HOME":"F:/jdk-12.0.1",
+        "OUTPUT_DIR":"F:/ThorDev/wexond/static"
+      }
+    }
+  },
+  "options": {
+    "env": {
+      "JAVA_HOME":"/usr/bin/",
+      "OUTPUT_DIR": "/Users/triasbratayudhana/Developer/Node/wexond/static"
+    }
+  },
   "tasks": [
     {
       "label": "build-class",
       "type": "shell",
       "command": [
-        "javac -cp lib/gson-2.6.2.jar:lib/pdfbox-app-2.0.16.jar  src/app/App.java -d out/  --release 8"
+        "${env:JAVA_HOME}/javac",
+        "-cp lib/*.jar",
+        "src/app/App.java",
+        "-d out/",
+        "--release 8"
       ],
       "group": "build"
     },
     {
+      "label": "extract jar",
+      "type": "shell",
+      "command":[
+        "${env:JAVA_HOME}/jar",
+        "xf",
+        "${workspaceFolder}/lib/*",
+        "${workspaceFolder}/out",
+      ]
+    },
+    {
       "label": "build-jar",
       "dependsOn": [
-        "build-class"
+        "build-class",
+        "extract jar"
       ],
       "type": "shell",
       "command":"jar",
@@ -35,7 +64,7 @@
     {
       "id": "outputDir",
       "description": "Out put directory",
-      "default": "/Users/triasbratayudhana/Developer/Node/wexond/static",
+      "default": "${env:OUTPUT_DIR}",
       "type": "promptString"
     }
   ]

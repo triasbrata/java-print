@@ -1,9 +1,6 @@
 package app;
 
 import javax.print.*;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
-import javax.print.attribute.standard.OrientationRequested;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -35,7 +32,6 @@ import java.util.Map;
 public class App {
   protected PrintService[] printServices;
   protected Map<String, Integer> listArguments;
-  private float height;
 
   public App() {
     this.printServices = PrintServiceLookup.lookupPrintServices(null, null);
@@ -130,7 +126,7 @@ public class App {
     Boolean isPrintSilent = false;
     Integer copies = 1;
     Boolean canclePrint = false;
-    boolean printInLanscape = true;
+    int orientation = PageFormat.PORTRAIT;
     if(subArguments.startsWith("-")){
       if(subArguments.equals("-printsilent")){
         isPrintSilent = true;
@@ -138,11 +134,10 @@ public class App {
       }
       
       if (subArguments.equals("-landscape")) {
-        printInLanscape = true;
+         orientation = PageFormat.LANDSCAPE;
         subArguments = args.remove(0);
       }
       if(subArguments.equals("-portrait")){
-        printInLanscape = false;
         subArguments = args.remove(0);
       } 
     }
@@ -161,9 +156,6 @@ public class App {
     try {
       PDDocument doc = PDDocument.load(file);
       PrinterJob printerJob = PrinterJob.getPrinterJob();
-      PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
-      OrientationRequested orientation = printInLanscape ? OrientationRequested.LANDSCAPE :  OrientationRequested.PORTRAIT;
-      aset.add(orientation);
       printerJob.setPrintService(printServiceUsage);
       printerJob.setCopies(copies);
       printerJob.setJobName(file.getName());
@@ -171,10 +163,11 @@ public class App {
         App.exit("No page in " + file.getName(), this);
       }
       PageFormat pf = new PageFormat();
+      pf.setOrientation(orientation);
       PDRectangle mediaBox = doc.getPage(0).getMediaBox();
       Paper paper = pf.getPaper();
       float width = mediaBox.getWidth();
-      height = mediaBox.getHeight();
+      float height = mediaBox.getHeight();
       paper.setSize(width, height);
       paper.setImageableArea(0, 0, width, height);
       pf.setPaper(paper);
@@ -200,7 +193,7 @@ public class App {
       }
       
       if(!canclePrint){
-        printerJob.print(aset);
+        printerJob.print();
         this.sendMessageSuccess(String.format("Print %d copies %s  from %s done", copies,file.getName(), printServiceUsage.getName()));  
       }
       doc.close();
